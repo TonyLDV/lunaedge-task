@@ -1,12 +1,15 @@
 "use client";
 
 import { z } from "zod";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { signUpSchema } from "@/lib/schema";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import React, { useEffect, useState } from "react";
+import { useChadContext } from "@/store/context";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import React, { useEffect, useMemo, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
@@ -16,9 +19,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useChadContext } from "@/store/context";
-import Link from "next/link";
-import { signUpSchema } from "@/lib/schema";
 
 const SignUpForm = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -29,11 +29,14 @@ const SignUpForm = () => {
   const { updateChadData, setActualStep, chadData, actualStep } =
     useChadContext();
 
-  const defaultValues = {
-    email: chadData.email || "",
-    name: chadData.name || "",
-    password: chadData.password || "",
-  };
+  const defaultValues = useMemo(
+    () => ({
+      email: chadData.email || "",
+      name: chadData.name || "",
+      password: chadData.password || "",
+    }),
+    [chadData.email, chadData.name, chadData.password]
+  );
 
   const form = useForm({
     resolver: zodResolver(signUpSchema),
@@ -51,7 +54,7 @@ const SignUpForm = () => {
     });
 
     return () => subscription.unsubscribe();
-  }, [form.watch, defaultValues]);
+  }, [form.watch, defaultValues, form]);
 
   const onSubmit = (data: z.infer<typeof signUpSchema>) => {
     if (isDataChanged) {

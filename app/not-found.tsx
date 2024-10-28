@@ -5,11 +5,12 @@ import { useRouter } from "next/dist/client/components/navigation";
 
 const NotFoundPage = () => {
   const router = useRouter();
+
   useEffect(() => {
     setTimeout(() => {
       router.push("/store");
     }, 10000);
-  }, []);
+  }, [router]);
 
   return (
     <div className="h-full flex flex-col space-y-4 items-center justify-center ">
